@@ -1,0 +1,961 @@
+openapi: 3.0.3
+info:
+  title: Billing API
+  version: 1.0.0
+  description: |
+    HTTP API for billing-app authentication, role management, and read-only
+    access to existing customer, bill, bill-item, and accounting records.
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+tags:
+  - name: Health
+  - name: Authentication
+  - name: Roles
+  - name: Customers
+  - name: Bills
+  - name: Bill Items
+  - name: Accounting
+paths:
+  /api/v1/health:
+    get:
+      tags: [Health]
+      summary: Check API and MySQL availability
+      operationId: checkHealth
+      responses:
+        "200":
+          description: API can reach MySQL
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+              example:
+                status: ok
+        "503":
+          description: MySQL is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthUnavailable"
+              example:
+                status: unavailable
+
+  /api/v1/auth/login:
+    post:
+      tags: [Authentication]
+      summary: Log in and receive a JWT access token
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            example:
+              email: admin@example.com
+              password: your-password
+      responses:
+        "200":
+          description: Login successful. Access token expires in 15 minutes.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: Invalid JSON, email, or missing credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: valid email and password are required
+        "401":
+          description: Email/password is invalid or account is inactive
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: invalid email or password
+        "500":
+          description: Login could not be completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: could not complete login
+
+  /api/v1/auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get the authenticated user
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user and assigned role
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user]
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/roles:
+    get:
+      tags: [Roles]
+      summary: List roles
+      description: Superadmin only. Results are ordered by name.
+      operationId: listRoles
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Roles returned
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [roles]
+                properties:
+                  roles:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Role"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          description: Roles could not be loaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    post:
+      tags: [Roles]
+      summary: Create a role
+      description: Superadmin only. New roles are not system roles.
+      operationId: createRole
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoleRequest"
+            example:
+              name: Billing Manager
+              code: billing_manager
+              description: Manages billing operations
+      responses:
+        "201":
+          description: Role created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [role]
+                properties:
+                  role:
+                    $ref: "#/components/schemas/Role"
+        "400":
+          description: Invalid request or role fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          description: Role name or code already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Role could not be created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/v1/roles/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Numeric role ID
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+    patch:
+      tags: [Roles]
+      summary: Update a role's name and description
+      description: |
+        Superadmin only. Both name and description are accepted in the request;
+        system roles cannot be changed. Role code is immutable through this API.
+      operationId: updateRole
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRoleRequest"
+            example:
+              name: Billing Lead
+              description: Leads billing operations
+      responses:
+        "200":
+          description: Role updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [role]
+                properties:
+                  role:
+                    $ref: "#/components/schemas/Role"
+        "400":
+          description: Invalid role ID or request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: System role cannot be changed or role name is already in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Role could not be updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/v1/customers:
+    get:
+      tags: [Customers]
+      summary: List customers
+      operationId: listCustomers
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Limit"
+        - name: search
+          in: query
+          description: Partial match against name or mobile; matching case follows the MySQL column collation.
+          schema:
+            type: string
+            maxLength: 250
+      responses:
+        "200":
+          description: Customer page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/customers/{id}:
+    get:
+      tags: [Customers]
+      summary: Get a customer by ID
+      operationId: getCustomer
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RecordID"
+      responses:
+        "200":
+          description: Customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/bills:
+    get:
+      tags: [Bills]
+      summary: List bills
+      operationId: listBills
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Limit"
+        - name: customerId
+          in: query
+          description: Filter by the existing customerId column.
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+        - name: date
+          in: query
+          description: Match the bill's calendar date.
+          schema:
+            type: string
+            format: date
+        - name: billNo
+          in: query
+          description: Match the existing billNo value.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Bill page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/bills/{id}:
+    get:
+      tags: [Bills]
+      summary: Get a bill by ID
+      operationId: getBill
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RecordID"
+      responses:
+        "200":
+          description: Bill
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/bills/{id}/items:
+    get:
+      tags: [Bill Items]
+      summary: List items for a bill
+      description: |
+        Checks that the bill exists, then selects bill_items by its existing
+        billId column. No database foreign key or GORM association is assumed.
+      operationId: listBillItems
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RecordID"
+      responses:
+        "200":
+          description: Items for the bill; data is an empty array when it has none.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillItemsList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/bill-items/{id}:
+    get:
+      tags: [Bill Items]
+      summary: Get a bill item by ID
+      operationId: getBillItem
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RecordID"
+      responses:
+        "200":
+          description: Bill item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillItemResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/accounting:
+    get:
+      tags: [Accounting]
+      summary: List accounting records
+      operationId: listAccounting
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Limit"
+        - name: date
+          in: query
+          description: Match the accounting date.
+          schema:
+            type: string
+            format: date
+        - name: status
+          in: query
+          description: Match the signed TINYINT status value.
+          schema:
+            type: integer
+            format: int32
+            minimum: -128
+            maximum: 127
+      responses:
+        "200":
+          description: Accounting record page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountingList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /api/v1/accounting/{id}:
+    get:
+      tags: [Accounting]
+      summary: Get an accounting record by ID
+      operationId: getAccountingRecord
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RecordID"
+      responses:
+        "200":
+          description: Accounting record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountingResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+    delete:
+      tags: [Roles]
+      summary: Delete a role
+      description: Superadmin only. System roles and roles assigned to users cannot be deleted.
+      operationId: deleteRole
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Role deleted
+        "400":
+          description: Invalid role ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: System role is protected or role is assigned to users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Role could not be deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequest:
+      description: Invalid ID, pagination, or filter parameter
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    NotFound:
+      description: Requested record does not exist
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    ServerError:
+      description: Database query failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    Unauthorized:
+      description: Missing, invalid, expired token, or inactive user
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: Authenticated user does not have the superadmin role
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  parameters:
+    RecordID:
+      name: id
+      in: path
+      required: true
+      description: Positive signed 32-bit database ID
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+    Page:
+      name: page
+      in: query
+      description: Page number; defaults to 1.
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Limit:
+      name: limit
+      in: query
+      description: Page size from 1 to 100; defaults to 10.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+  schemas:
+    ApiError:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        message:
+          type: string
+    Pagination:
+      type: object
+      required: [page, limit, total]
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+          format: int64
+    Customer:
+      type: object
+      required: [customer_id, name, mobile, gst_no, email, address, status]
+      properties:
+        customer_id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          maxLength: 250
+        mobile:
+          type: string
+          maxLength: 250
+        gst_no:
+          type: string
+          maxLength: 250
+        email:
+          type: string
+          maxLength: 250
+        address:
+          type: string
+        status:
+          type: integer
+          format: int32
+          minimum: -128
+          maximum: 127
+    Bill:
+      type: object
+      required: [bill_id, bill_no, customer_id, date, gst_status, gst_amount, amount, amount_received, amount_pending, engineers_name, site_name, location, item_count, status]
+      properties:
+        bill_id:
+          type: integer
+          format: int32
+        bill_no:
+          type: integer
+          format: int64
+        customer_id:
+          type: integer
+          format: int32
+        date:
+          type: string
+          format: date-time
+        gst_status:
+          type: integer
+          format: int32
+        gst_amount:
+          type: integer
+          format: int32
+        amount:
+          type: integer
+          format: int32
+        amount_received:
+          type: integer
+          format: int32
+        amount_pending:
+          type: integer
+          format: int32
+        engineers_name:
+          type: string
+        site_name:
+          type: string
+        location:
+          type: string
+        item_count:
+          type: integer
+          format: int32
+        status:
+          type: integer
+          format: int32
+    BillItem:
+      type: object
+      required: [item_id, bill_id, name, rate, unit, amount, status]
+      properties:
+        item_id:
+          type: integer
+          format: int32
+        bill_id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          maxLength: 250
+        rate:
+          type: string
+          description: Existing database column is TEXT.
+        unit:
+          type: string
+          description: Existing database column is TEXT.
+        amount:
+          type: integer
+          format: int32
+        date:
+          type: string
+          nullable: true
+          description: Existing nullable database column is TEXT.
+        status:
+          type: integer
+          format: int32
+    Accounting:
+      type: object
+      required: [acc_id, short_desc, amount, detail_desc, date, status]
+      properties:
+        acc_id:
+          type: integer
+          format: int32
+        short_desc:
+          type: string
+        amount:
+          type: integer
+          format: int64
+        detail_desc:
+          type: string
+        date:
+          type: string
+          format: date
+        status:
+          type: integer
+          format: int32
+    CustomerResponse:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/Customer"
+    BillResponse:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/Bill"
+    BillItemResponse:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/BillItem"
+    AccountingResponse:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/Accounting"
+    CustomerList:
+      type: object
+      required: [success, message, data, pagination]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Customer"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+    BillList:
+      type: object
+      required: [success, message, data, pagination]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Bill"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+    BillItemsList:
+      type: object
+      required: [success, message, data]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BillItem"
+    AccountingList:
+      type: object
+      required: [success, message, data, pagination]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Accounting"
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    LoginResponse:
+      type: object
+      required: [access_token, token_type, expires_at, user]
+      properties:
+        access_token:
+          type: string
+          description: HS256 signed JWT
+        token_type:
+          type: string
+          enum: [Bearer]
+        expires_at:
+          type: string
+          format: date-time
+        user:
+          $ref: "#/components/schemas/User"
+    User:
+      type: object
+      required: [id, full_name, email, role_id, role, is_active, created_at, updated_at]
+      properties:
+        id:
+          type: integer
+          format: int64
+        full_name:
+          type: string
+        email:
+          type: string
+          format: email
+        role_id:
+          type: integer
+          format: int64
+        role:
+          $ref: "#/components/schemas/Role"
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Role:
+      type: object
+      required: [id, name, code, description, is_system, created_at, updated_at]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          maxLength: 100
+        code:
+          type: string
+          maxLength: 50
+          pattern: "^[a-z][a-z0-9_]{0,49}$"
+        description:
+          type: string
+          maxLength: 255
+        is_system:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CreateRoleRequest:
+      type: object
+      required: [name, code]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: "^[a-z][a-z0-9_]{0,49}$"
+        description:
+          type: string
+          maxLength: 255
+    UpdateRoleRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 255
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    HealthUnavailable:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [unavailable]

@@ -1,0 +1,144 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/api/v1/bills/:id/items"
+  method: POST
+  headers:
+    - key: Content-Type
+      value: application/json
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  pathVariables:
+    - key: id
+      value: "5178"
+      disabled: false
+      description: Positive signed 32-bit database ID
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          {
+            "name": "Installation",
+            "rate": "5000",
+            "unit": "service",
+            "amount": 10000,
+            "date": "2026-11-10",
+            "status": 1
+          },
+          {
+            "name": "Materials",
+            "rate": "5000",
+            "unit": "lot",
+            "amount": 5000,
+            "date": null,
+            "status": 1
+          }
+        ]
+      }
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "string",
+        "data": [
+          {
+            "item_id": 421,
+            "bill_id": 2116,
+            "name": "string",
+            "rate": "string",
+            "unit": "string",
+            "amount": 8323,
+            "status": 624,
+            "date": "string"
+          },
+          {
+            "item_id": 9122,
+            "bill_id": 6951,
+            "name": "string",
+            "rate": "string",
+            "unit": "string",
+            "amount": 1713,
+            "status": 6640,
+            "date": "string"
+          }
+        ]
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "item_id": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "bill_id": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 250
+                },
+                "rate": {
+                  "type": "string",
+                  "description": "Existing database column is TEXT."
+                },
+                "unit": {
+                  "type": "string",
+                  "description": "Existing database column is TEXT."
+                },
+                "amount": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "date": {
+                  "type": "string",
+                  "description": "Existing nullable database column is TEXT."
+                },
+                "status": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "required": [
+                "item_id",
+                "bill_id",
+                "name",
+                "rate",
+                "unit",
+                "amount",
+                "status"
+              ]
+            }
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "data"
+        ]
+      }
+order: 1000

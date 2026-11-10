@@ -1,0 +1,156 @@
+$kind: http-example
+name: Login successful. Access token expires in 15 minutes.
+request:
+  url: "{{baseUrl}}/api/v1/auth/login"
+  method: POST
+  headers:
+    Content-Type: application/json
+    Accept: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "email": "admin@example.com",
+        "password": "your-password"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "access_token": "string",
+        "token_type": "Bearer",
+        "expires_at": "2006-01-22T06:14:50.601Z",
+        "user": {
+          "id": 1587,
+          "full_name": "string",
+          "email": "0wFmBV3xtg0HK6h@rgRLSfjKjKEYYCsAt.zj",
+          "role_id": 2708,
+          "role": {
+            "id": 8360,
+            "name": "string",
+            "code": "hhcelt_go1o5pcisdwygfbe2ci2v9u",
+            "description": "string",
+            "is_system": true,
+            "created_at": "1954-05-24T07:16:31.248Z",
+            "updated_at": "1954-06-26T22:58:23.943Z"
+          },
+          "is_active": false,
+          "created_at": "1964-09-23T05:50:17.826Z",
+          "updated_at": "2005-12-07T00:30:56.322Z"
+        }
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "HS256 signed JWT"
+          },
+          "token_type": {
+            "type": "string",
+            "enum": [
+              "Bearer"
+            ]
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "full_name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              },
+              "role_id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "role": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "code": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "pattern": "^[a-z][a-z0-9_]{0,49}$"
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "is_system": {
+                    "type": "boolean"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "code",
+                  "description",
+                  "is_system",
+                  "created_at",
+                  "updated_at"
+                ]
+              },
+              "is_active": {
+                "type": "boolean"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "full_name",
+              "email",
+              "role_id",
+              "role",
+              "is_active",
+              "created_at",
+              "updated_at"
+            ]
+          }
+        },
+        "required": [
+          "access_token",
+          "token_type",
+          "expires_at",
+          "user"
+        ]
+      }
+order: 1000

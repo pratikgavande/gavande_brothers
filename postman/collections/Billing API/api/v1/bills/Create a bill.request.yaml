@@ -1,0 +1,77 @@
+$kind: http-request
+description: |
+  All database NOT NULL bill fields are required. customer_id must refer
+  to an existing customer. Amount and GST fields are stored exactly as
+  submitted; the API does not calculate or reconcile any values. The
+  database generates bill_id.
+url: "{{baseUrl}}/api/v1/bills"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "bill_no": 1001,
+      "customer_id": 1,
+      "date": "2026-11-10T09:00:00+05:30",
+      "gst_status": 1,
+      "gst_amount": 0,
+      "amount": 15000,
+      "amount_received": 0,
+      "amount_pending": 15000,
+      "engineers_name": "Engineer Name",
+      "site_name": "Site A",
+      "location": "Pune",
+      "item_count": 2,
+      "status": 1
+    }
+  $type: |-
+    {
+      "type": "object",
+      "properties": {
+        "bill_no": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "customer_id": {
+          "type": "integer",
+          "minimum": 1,
+          "format": "int32"
+        },
+        "date": {
+          "type": "string",
+          "description": "RFC3339 date-time.",
+          "format": "date-time"
+        },
+        "gst_status": {
+          "type": "integer",
+          "minimum": -128,
+          "maximum": 127,
+          "format": "int32"
+        }
+      },
+      "required": [
+        "bill_no",
+        "customer_id",
+        "date",
+        "gst_status",
+        "gst_amount",
+        "amount",
+        "amount_received",
+        "amount_pending",
+        "engineers_name",
+        "site_name",
+        "location",
+        "item_count",
+        "status"
+      ]
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Create a bill.resources/examples
+order: 2000

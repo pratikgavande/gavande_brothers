@@ -1,0 +1,67 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/v1/customers/:id"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Accept: application/json
+pathVariables:
+  - key: id
+    value: "289"
+    disabled: false
+    description: Positive signed 32-bit database ID
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+body:
+  type: json
+  content: |-
+    {
+      "mobile": "9876543210",
+      "address": "Pune, Maharashtra"
+    }
+  $type: |-
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "mobile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "gst_no": {
+          "type": "string",
+          "maxLength": 250
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 250
+        },
+        "address": {
+          "type": "string"
+        }
+      }
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Partially update a customer.resources/examples
+order: 2000

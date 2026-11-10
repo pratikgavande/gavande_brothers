@@ -1,0 +1,37 @@
+$kind: http-request
+description: |
+  Checks that the bill exists, then selects bill_items by its existing
+  billId column. No database foreign key or GORM association is assumed.
+url: "{{baseUrl}}/api/v1/bills/:id/items"
+method: GET
+headers:
+  Accept: application/json
+pathVariables:
+  - key: id
+    value: "289"
+    disabled: false
+    description: Positive signed 32-bit database ID
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/List items for a bill.resources/examples
+order: 1000

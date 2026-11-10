@@ -1,0 +1,17 @@
+workspace:
+  id: 08eaa9c5-25f5-4535-98b1-56598d799531
+localResources:
+  specs:
+    - ../backend/docs/openapi.yaml
+    - ../postman/specs/Billing API/openapi.yaml
+    - ../postman/specs/Billing API-1/openapi.yaml
+    - ../postman/specs/Billing API-2/openapi.yaml
+    - ../postman/specs/Billing API-3/openapi.yaml
+resourceNameMappings:
+  specs:
+    - ../postman/specs/Billing API/openapi.yaml: Billing API
+    - ../postman/specs/Billing API-1/openapi.yaml: Billing API
+    - ../postman/specs/Billing API-2/openapi.yaml: Billing API
+    - ../postman/specs/Billing API-3/openapi.yaml: Billing API
+cloudResources:
+  collections: {}

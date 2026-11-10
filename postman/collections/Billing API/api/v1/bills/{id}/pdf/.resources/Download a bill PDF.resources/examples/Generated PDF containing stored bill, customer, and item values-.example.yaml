@@ -1,0 +1,39 @@
+$kind: http-example
+name: Generated PDF containing stored bill, customer, and item values.
+request:
+  url: "{{baseUrl}}/api/v1/bills/:id/pdf"
+  method: GET
+  headers:
+    - key: Accept
+      value: application/pdf
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  pathVariables:
+    - key: id
+      value: "289"
+      disabled: false
+      description: Positive signed 32-bit database ID
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/pdf
+    - key: Content-Disposition
+      value: string
+      disabled: false
+      description: Attachment filename.
+      $type: string
+  body:
+    type: text
+    content: string
+    $type: |-
+      {
+        "type": "string",
+        "format": "binary"
+      }
+order: 1000

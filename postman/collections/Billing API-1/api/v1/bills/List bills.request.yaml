@@ -1,0 +1,91 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/v1/bills?page=1&limit=10&customerId=5178&date=1977-11-15&billNo=232"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  - key: page
+    value: "1"
+    disabled: false
+    description: Page number; defaults to 1.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "default": 1,
+            "minimum": 1
+          }
+        }
+      }
+  - key: limit
+    value: "10"
+    disabled: false
+    description: Page size from 1 to 100; defaults to 10.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      }
+  - key: customerId
+    value: "5178"
+    disabled: false
+    description: Filter by the existing customerId column.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        }
+      }
+  - key: date
+    value: 1977-11-15
+    disabled: false
+    description: Match the bill's calendar date.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+  - key: billNo
+    value: "232"
+    disabled: false
+    description: Match the existing billNo value.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/List bills.resources/examples
+order: 1000

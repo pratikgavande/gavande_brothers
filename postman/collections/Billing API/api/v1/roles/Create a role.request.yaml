@@ -1,0 +1,47 @@
+$kind: http-request
+description: Superadmin only. New roles are not system roles.
+url: "{{baseUrl}}/api/v1/roles"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Billing Manager",
+      "code": "billing_manager",
+      "description": "Manages billing operations"
+    }
+  $type: |-
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "pattern": "^[a-z][a-z0-9_]{0,49}$"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 255
+        }
+      },
+      "required": [
+        "name",
+        "code"
+      ]
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Create a role.resources/examples
+order: 2000

@@ -1,0 +1,6 @@
+$kind: collection
+description: |
+  HTTP API for billing-app authentication, role management, and read-only
+  access to existing customer, bill, bill-item, and accounting records.
+variables:
+  baseUrl: http://localhost:8080

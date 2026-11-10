@@ -1,0 +1,6 @@
+name: bearer_token
+values:
+  - key: bearerToken
+    value: ''
+  - key: my_token
+    value: ''

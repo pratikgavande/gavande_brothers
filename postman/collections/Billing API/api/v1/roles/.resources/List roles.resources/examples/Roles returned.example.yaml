@@ -1,0 +1,98 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/api/v1/roles"
+  method: GET
+  headers:
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "roles": [
+          {
+            "id": 6032,
+            "name": "string",
+            "code": "t2y1co8d0j6vtdev",
+            "description": "string",
+            "is_system": false,
+            "created_at": "1977-03-03T03:44:26.738Z",
+            "updated_at": "1983-06-12T01:04:06.407Z"
+          },
+          {
+            "id": 3173,
+            "name": "string",
+            "code": "s18gdfozpqt3jblmwq9aog_pee8",
+            "description": "string",
+            "is_system": true,
+            "created_at": "2006-06-03T16:10:57.365Z",
+            "updated_at": "2021-12-21T17:54:18.213Z"
+          }
+        ]
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "code": {
+                  "type": "string",
+                  "maxLength": 50,
+                  "pattern": "^[a-z][a-z0-9_]{0,49}$"
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 255
+                },
+                "is_system": {
+                  "type": "boolean"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "code",
+                "description",
+                "is_system",
+                "created_at",
+                "updated_at"
+              ]
+            }
+          }
+        },
+        "required": [
+          "roles"
+        ]
+      }
+order: 1000

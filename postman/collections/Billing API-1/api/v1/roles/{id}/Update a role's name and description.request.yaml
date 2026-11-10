@@ -1,0 +1,60 @@
+$kind: http-request
+description: |
+  Superadmin only. Both name and description are accepted in the request;
+  system roles cannot be changed. Role code is immutable through this API.
+url: "{{baseUrl}}/api/v1/roles/:id"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Accept: application/json
+pathVariables:
+  - key: id
+    value: "8796"
+    disabled: false
+    description: Numeric role ID
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+body:
+  type: json
+  content: |-
+    {
+      "name": "Billing Lead",
+      "description": "Leads billing operations"
+    }
+  $type: |-
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 255
+        }
+      },
+      "required": [
+        "name"
+      ]
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Update a role's name and description.resources/examples
+order: 1000

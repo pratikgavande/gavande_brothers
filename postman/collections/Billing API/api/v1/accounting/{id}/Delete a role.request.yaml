@@ -1,0 +1,18 @@
+$kind: http-request
+description: Superadmin only. System roles and roles assigned to users cannot be deleted.
+url: "{{baseUrl}}/api/v1/accounting/:id"
+method: DELETE
+headers:
+  Accept: application/json
+pathVariables:
+  id: ""
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Delete a role.resources/examples
+order: 2000

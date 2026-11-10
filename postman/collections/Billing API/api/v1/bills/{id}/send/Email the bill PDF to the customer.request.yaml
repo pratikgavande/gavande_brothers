@@ -1,0 +1,35 @@
+$kind: http-request
+description: Returns success only after the configured SMTP server accepts the message.
+url: "{{baseUrl}}/api/v1/bills/:id/send"
+method: POST
+headers:
+  Accept: application/json
+pathVariables:
+  - key: id
+    value: "289"
+    disabled: false
+    description: Positive signed 32-bit database ID
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Email the bill PDF to the customer.resources/examples
+order: 1000

@@ -1,0 +1,69 @@
+$kind: http-request
+description: The bill ID cannot be changed. Send date as null to clear its nullable TEXT value.
+url: "{{baseUrl}}/api/v1/bill-items/:id"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Accept: application/json
+pathVariables:
+  - key: id
+    value: "5178"
+    disabled: false
+    description: Positive signed 32-bit database ID
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+body:
+  type: json
+  content: |-
+    {
+      "rate": "5500",
+      "date": null
+    }
+  $type: |-
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "rate": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "date": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "minimum": -128,
+          "maximum": 127
+        }
+      }
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Partially update a bill item.resources/examples
+order: 2000

@@ -1,0 +1,72 @@
+$kind: http-request
+description: |
+  All database NOT NULL customer fields are required. name and mobile
+  must not be blank. Empty strings are allowed for GST number, email,
+  and address. The database generates customer_id.
+url: "{{baseUrl}}/api/v1/customers"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Gavande Bros",
+      "mobile": "9876543210",
+      "gst_no": "",
+      "email": "",
+      "address": "Pune, Maharashtra",
+      "status": 1
+    }
+  $type: |-
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "mobile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "gst_no": {
+          "type": "string",
+          "maxLength": 250,
+          "description": "Use an empty string when no GST number is available."
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 250,
+          "description": "Use an empty string when no email is available."
+        },
+        "address": {
+          "type": "string",
+          "description": "Empty string is allowed."
+        },
+        "status": {
+          "type": "integer",
+          "minimum": -128,
+          "maximum": 127,
+          "format": "int32"
+        }
+      },
+      "required": [
+        "name",
+        "mobile",
+        "gst_no",
+        "email",
+        "address",
+        "status"
+      ]
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Create a customer.resources/examples
+order: 2000

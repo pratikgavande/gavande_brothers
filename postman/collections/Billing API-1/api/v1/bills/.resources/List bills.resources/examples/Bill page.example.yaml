@@ -1,0 +1,204 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/api/v1/bills?page=1&limit=10&customerId=5178&date=1977-11-15&billNo=232"
+  method: GET
+  headers:
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  queryParams:
+    - key: page
+      value: "1"
+      disabled: false
+      description: Page number; defaults to 1.
+    - key: limit
+      value: "10"
+      disabled: false
+      description: Page size from 1 to 100; defaults to 10.
+    - key: customerId
+      value: "5178"
+      disabled: false
+      description: Filter by the existing customerId column.
+    - key: date
+      value: 1977-11-15
+      disabled: false
+      description: Match the bill's calendar date.
+    - key: billNo
+      value: "232"
+      disabled: false
+      description: Match the existing billNo value.
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "string",
+        "data": [
+          {
+            "bill_id": 4461,
+            "bill_no": 8213,
+            "customer_id": 7897,
+            "date": "1966-04-26T07:25:44.419Z",
+            "gst_status": 6939,
+            "gst_amount": 5332,
+            "amount": 7995,
+            "amount_received": 563,
+            "amount_pending": 3055,
+            "engineers_name": "string",
+            "site_name": "string",
+            "location": "string",
+            "item_count": 3032,
+            "status": 7183
+          },
+          {
+            "bill_id": 5106,
+            "bill_no": 9572,
+            "customer_id": 4393,
+            "date": "1999-05-16T07:56:23.063Z",
+            "gst_status": 6887,
+            "gst_amount": 9062,
+            "amount": 9336,
+            "amount_received": 1318,
+            "amount_pending": 1920,
+            "engineers_name": "string",
+            "site_name": "string",
+            "location": "string",
+            "item_count": 1729,
+            "status": 5709
+          }
+        ],
+        "pagination": {
+          "page": 2755,
+          "limit": 732,
+          "total": 1339
+        }
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bill_id": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "bill_no": {
+                  "type": "integer",
+                  "format": "int64"
+                },
+                "customer_id": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "gst_status": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "gst_amount": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "amount": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "amount_received": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "amount_pending": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "engineers_name": {
+                  "type": "string"
+                },
+                "site_name": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                },
+                "item_count": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "status": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "required": [
+                "bill_id",
+                "bill_no",
+                "customer_id",
+                "date",
+                "gst_status",
+                "gst_amount",
+                "amount",
+                "amount_received",
+                "amount_pending",
+                "engineers_name",
+                "site_name",
+                "location",
+                "item_count",
+                "status"
+              ]
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer",
+                "format": "int64"
+              }
+            },
+            "required": [
+              "page",
+              "limit",
+              "total"
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "data",
+          "pagination"
+        ]
+      }
+order: 1000

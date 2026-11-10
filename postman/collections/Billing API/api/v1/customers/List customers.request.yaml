@@ -1,0 +1,62 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/v1/customers?page=1&limit=10&search=string"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  - key: page
+    value: "1"
+    disabled: false
+    description: Page number; defaults to 1.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "default": 1,
+            "minimum": 1
+          }
+        }
+      }
+  - key: limit
+    value: "10"
+    disabled: false
+    description: Page size from 1 to 100; defaults to 10.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      }
+  - key: search
+    value: string
+    disabled: false
+    description: Partial match against name or mobile; matching case follows the MySQL column collation.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "maxLength": 250
+          }
+        }
+      }
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/List customers.resources/examples
+order: 1000

@@ -1,0 +1,123 @@
+$kind: http-example
+name: Items for the bill; data is an empty array when it has none.
+request:
+  url: "{{baseUrl}}/api/v1/bills/:id/items"
+  method: GET
+  headers:
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  pathVariables:
+    - key: id
+      value: "289"
+      disabled: false
+      description: Positive signed 32-bit database ID
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "string",
+        "data": [
+          {
+            "item_id": 7891,
+            "bill_id": 3797,
+            "name": "string",
+            "rate": "string",
+            "unit": "string",
+            "amount": 2250,
+            "status": 9152,
+            "date": "string"
+          },
+          {
+            "item_id": 254,
+            "bill_id": 6336,
+            "name": "string",
+            "rate": "string",
+            "unit": "string",
+            "amount": 2821,
+            "status": 4309,
+            "date": "string"
+          }
+        ]
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "item_id": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "bill_id": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 250
+                },
+                "rate": {
+                  "type": "string",
+                  "description": "Existing database column is TEXT."
+                },
+                "unit": {
+                  "type": "string",
+                  "description": "Existing database column is TEXT."
+                },
+                "amount": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "date": {
+                  "type": "string",
+                  "description": "Existing nullable database column is TEXT."
+                },
+                "status": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "required": [
+                "item_id",
+                "bill_id",
+                "name",
+                "rate",
+                "unit",
+                "amount",
+                "status"
+              ]
+            }
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "data"
+        ]
+      }
+order: 1000

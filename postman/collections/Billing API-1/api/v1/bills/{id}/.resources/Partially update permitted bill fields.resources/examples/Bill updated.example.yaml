@@ -1,0 +1,148 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/api/v1/bills/:id"
+  method: PATCH
+  headers:
+    - key: Content-Type
+      value: application/json
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  pathVariables:
+    - key: id
+      value: "5178"
+      disabled: false
+      description: Positive signed 32-bit database ID
+  body:
+    type: json
+    content: |-
+      {
+        "date": "2026-11-10T09:00:00+05:30",
+        "engineers_name": "Engineer Name",
+        "site_name": "Site A"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": true,
+        "message": "string",
+        "data": {
+          "bill_id": 5697,
+          "bill_no": 6018,
+          "customer_id": 3573,
+          "date": "1993-09-01T20:45:18.029Z",
+          "gst_status": 9719,
+          "gst_amount": 745,
+          "amount": 7611,
+          "amount_received": 1212,
+          "amount_pending": 6653,
+          "engineers_name": "string",
+          "site_name": "string",
+          "location": "string",
+          "item_count": 9032,
+          "status": 2785
+        }
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "bill_id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "bill_no": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "customer_id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "date": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "gst_status": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "gst_amount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "amount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "amount_received": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "amount_pending": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "engineers_name": {
+                "type": "string"
+              },
+              "site_name": {
+                "type": "string"
+              },
+              "location": {
+                "type": "string"
+              },
+              "item_count": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "status": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "required": [
+              "bill_id",
+              "bill_no",
+              "customer_id",
+              "date",
+              "gst_status",
+              "gst_amount",
+              "amount",
+              "amount_received",
+              "amount_pending",
+              "engineers_name",
+              "site_name",
+              "location",
+              "item_count",
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "data"
+        ]
+      }
+order: 1000

@@ -1,0 +1,78 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/v1/accounting?page=1&limit=10&date=1954-04-07&status=47"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  - key: page
+    value: "1"
+    disabled: false
+    description: Page number; defaults to 1.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "default": 1,
+            "minimum": 1
+          }
+        }
+      }
+  - key: limit
+    value: "10"
+    disabled: false
+    description: Page size from 1 to 100; defaults to 10.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      }
+  - key: date
+    value: 1954-04-07
+    disabled: false
+    description: Match the accounting date.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+  - key: status
+    value: "47"
+    disabled: false
+    description: Match the signed TINYINT status value.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": -128,
+            "maximum": 127
+          }
+        }
+      }
+body:
+  type: text
+  content: ""
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/List accounting records.resources/examples
+order: 1000

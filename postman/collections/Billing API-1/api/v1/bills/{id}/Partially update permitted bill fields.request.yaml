@@ -1,0 +1,74 @@
+$kind: http-request
+description: Bill number, customer ownership, amount, amount received, amount pending, and item count cannot be changed through this endpoint.
+url: "{{baseUrl}}/api/v1/bills/:id"
+method: PATCH
+headers:
+  Content-Type: application/json
+  Accept: application/json
+pathVariables:
+  - key: id
+    value: "5178"
+    disabled: false
+    description: Positive signed 32-bit database ID
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+body:
+  type: json
+  content: |-
+    {
+      "date": "2026-11-10T09:00:00+05:30",
+      "engineers_name": "Engineer Name",
+      "site_name": "Site A"
+    }
+  $type: |-
+    {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "gst_status": {
+          "type": "integer",
+          "minimum": -128,
+          "maximum": 127
+        },
+        "gst_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "engineers_name": {
+          "type": "string"
+        },
+        "site_name": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "minimum": -128,
+          "maximum": 127
+        }
+      }
+    }
+auth:
+  type: bearer
+  credentials:
+    token: "{{bearerToken}}"
+settings: {}
+examples: ./.resources/Partially update permitted bill fields.resources/examples
+order: 2000
