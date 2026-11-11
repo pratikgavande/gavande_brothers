@@ -1,11 +1,17 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar.jsx'
 import TopNavbar from '../components/TopNavbar.jsx'
+import { useAuth } from '../context/useAuth.js'
 import '../App.css'
 
 function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
 
   function closeSidebar() {
     setSidebarOpen(false)

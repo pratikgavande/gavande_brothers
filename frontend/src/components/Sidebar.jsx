@@ -2,7 +2,6 @@ import { NavLink } from 'react-router-dom'
 
 const navigation = [
   { label: 'Overview', path: '/', icon: 'bi-grid-1x2' },
-  { label: 'Login & authentication', path: '/authentication', icon: 'bi-person-lock' },
   { label: 'Customers', path: '/customers', icon: 'bi-people' },
   { label: 'Bills', path: '/bills', icon: 'bi-receipt' },
   { label: 'Bill items', path: '/bill-items', icon: 'bi-list-check' },

@@ -1,8 +1,8 @@
 import { useLocation } from 'react-router-dom'
+import { useAuth } from '../context/useAuth.js'
 
 const pageTitles = {
   '/': 'Overview',
-  '/authentication': 'Login & authentication',
   '/customers': 'Customers',
   '/bills': 'Bills',
   '/bill-items': 'Bill items',
@@ -12,6 +12,7 @@ const pageTitles = {
 
 function TopNavbar({ onMenuClick }) {
   const { pathname } = useLocation()
+  const { user, logout } = useAuth()
   const pageTitle = pageTitles[pathname] ?? 'Workspace'
 
   return (
@@ -30,11 +31,21 @@ function TopNavbar({ onMenuClick }) {
           <div className="topbar-subtitle">Gavande Bros Billing System</div>
         </div>
       </div>
-      <div className="d-flex align-items-center gap-3">
-        <span className="d-none d-sm-inline text-secondary small">Welcome</span>
-        <span className="avatar" aria-label="User profile placeholder">
-          GB
+      <div className="d-flex align-items-center gap-2 gap-sm-3">
+        <span className="d-none d-sm-inline text-secondary small">
+          {user?.full_name ?? user?.email}
         </span>
+        <span className="avatar" aria-label={user?.full_name ?? 'Signed-in user'}>
+          {user?.full_name?.trim()?.charAt(0)?.toUpperCase() ?? 'U'}
+        </span>
+        <button
+          type="button"
+          className="btn btn-outline-secondary btn-sm"
+          onClick={logout}
+        >
+          <i className="bi bi-box-arrow-right me-sm-1" aria-hidden="true" />
+          <span className="d-none d-sm-inline">Sign out</span>
+        </button>
       </div>
     </header>
   )

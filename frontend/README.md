@@ -1,9 +1,8 @@
 # Gavande Bros frontend
 
 React application built with Vite, JavaScript, Bootstrap 5, React Router, and
-Axios. The current version provides the responsive application shell and
-placeholder navigation only; it does not connect to the backend or contain
-business data.
+Axios. The current version includes backend login and a responsive application
+shell with placeholder module navigation.
 
 ## Run locally
 
@@ -14,6 +13,12 @@ npm run dev
 ```
 
 Open the local URL printed by Vite (normally `http://localhost:5173`).
+The Vite development server proxies `/api` requests to `http://localhost:8080`.
+Set `VITE_API_BASE_URL` in `.env.local` when the backend API is hosted elsewhere.
+
+The access token is kept in memory and sent as a Bearer token by the shared
+Axios client. Reloading the page clears the session and requires signing in
+again. Do not store access tokens in local storage.
 
 ## Structure
 
